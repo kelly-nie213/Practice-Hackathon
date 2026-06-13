@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "memowell",
+    "slug": "memowell",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Used for voice navigation and journal voice recording.",
+        "NSPhotoLibraryUsageDescription": "Used to add family photos.",
+        "NSLocationWhenInUseUsageDescription": "Used for the I'm Lost emergency feature and local weather.",
+        "NSSpeechRecognitionUsageDescription": "Used to navigate the app by voice."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-speech-recognition"
+    ]
+  }
+}
