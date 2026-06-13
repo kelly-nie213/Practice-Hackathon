@@ -1,18 +1,13 @@
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from './config';
+// Storage requires Firebase Blaze plan. All functions return '' gracefully if unavailable.
 
-export async function uploadPhoto(path: string, uri: string): Promise<string> {
-  const response = await fetch(uri);
-  const blob = await response.blob();
-  const storageRef = ref(storage, path);
-  await uploadBytes(storageRef, blob);
-  return getDownloadURL(storageRef);
+export async function uploadPhoto(_path: string, _uri: string): Promise<string> {
+  return '';
 }
 
-export async function uploadUserProfilePhoto(uid: string, uri: string): Promise<string> {
-  return uploadPhoto(`users/${uid}/profile/profile-photo.jpg`, uri);
+export async function uploadUserProfilePhoto(_uid: string, _uri: string): Promise<string> {
+  return '';
 }
 
-export async function uploadFamilyMemberPhoto(uid: string, memberId: string, uri: string): Promise<string> {
-  return uploadPhoto(`users/${uid}/family/${memberId}/photo.jpg`, uri);
+export async function uploadFamilyMemberPhoto(_uid: string, _memberId: string, _uri: string): Promise<string> {
+  return '';
 }
