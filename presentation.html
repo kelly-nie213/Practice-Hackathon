@@ -308,6 +308,103 @@
       color: rgba(245,239,228,0.18); letter-spacing: 0.09em;
       pointer-events: none; z-index: 101;
     }
+    /* ─── Keyframes ──────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes expandLine {
+      from { transform: scaleX(0); opacity: 0; }
+      to   { transform: scaleX(1); opacity: 0.55; }
+    }
+
+    @keyframes float1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      30%       { transform: translate(20px, -26px) scale(1.04); }
+      65%       { transform: translate(-10px, 14px) scale(0.97); }
+    }
+
+    @keyframes float2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      35%       { transform: translate(-22px, 18px) scale(1.03); }
+      70%       { transform: translate(12px, -14px) scale(0.98); }
+    }
+
+    @keyframes coinFloat {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50%       { transform: translateY(-12px) rotate(3deg); }
+    }
+
+    /* ─── Orb float animations ───────────────────────── */
+    .orb--gold     { animation: float1 13s ease-in-out infinite; }
+    .orb--teal     { animation: float2 16s ease-in-out infinite; }
+    .orb--coral    { animation: float1 11s ease-in-out infinite 2s; }
+    .orb--lavender { animation: float2 14s ease-in-out infinite 1s; }
+
+    /* ─── Coin emoji ─────────────────────────────────── */
+    .coin-emoji { display: inline-block; animation: coinFloat 3s ease-in-out infinite; }
+
+    /* ─── Slide content entrance (.anim class) ───────── */
+    .slide.anim .slide-header {
+      animation: fadeUp 0.5s cubic-bezier(.16,1,.3,1) both;
+      animation-delay: 0.05s;
+    }
+    .slide.anim .eyebrow {
+      animation: fadeUp 0.6s cubic-bezier(.16,1,.3,1) both;
+      animation-delay: 0.15s;
+    }
+    .slide.anim h2,
+    .slide.anim .display-title,
+    .slide.anim .big-cta {
+      animation: fadeUp 0.7s cubic-bezier(.16,1,.3,1) both;
+      animation-delay: 0.25s;
+    }
+    .slide.anim .divider {
+      transform-origin: left;
+      animation: expandLine 0.6s cubic-bezier(.16,1,.3,1) both;
+      animation-delay: 0.38s;
+    }
+    .slide.anim .divider.centered { transform-origin: center; }
+    .slide.anim .tagline {
+      animation: fadeUp 0.65s cubic-bezier(.16,1,.3,1) both;
+      animation-delay: 0.42s;
+    }
+    .slide.anim .subtitle {
+      animation: fadeUp 0.65s cubic-bezier(.16,1,.3,1) both;
+      animation-delay: 0.54s;
+    }
+
+    /* Stat cards — staggered */
+    .slide.anim .stat-card:nth-child(1) { animation: fadeUp 0.65s cubic-bezier(.16,1,.3,1) both 0.38s; }
+    .slide.anim .stat-card:nth-child(2) { animation: fadeUp 0.65s cubic-bezier(.16,1,.3,1) both 0.52s; }
+    .slide.anim .stat-card:nth-child(3) { animation: fadeUp 0.65s cubic-bezier(.16,1,.3,1) both 0.66s; }
+
+    /* Quote */
+    .slide.anim .quote { animation: fadeUp 0.7s cubic-bezier(.16,1,.3,1) both 0.80s; }
+
+    /* Two-col panels */
+    .slide.anim .two-col > div:nth-child(1) { animation: fadeUp 0.65s cubic-bezier(.16,1,.3,1) both 0.38s; }
+    .slide.anim .two-col > div:nth-child(2) { animation: fadeUp 0.65s cubic-bezier(.16,1,.3,1) both 0.54s; }
+
+    /* Chips */
+    .slide.anim .chip-row { animation: fadeUp 0.65s cubic-bezier(.16,1,.3,1) both 0.68s; }
+
+    /* Pillars — staggered */
+    .slide.anim .pillar:nth-child(1) { animation: fadeUp 0.65s cubic-bezier(.16,1,.3,1) both 0.32s; }
+    .slide.anim .pillar:nth-child(2) { animation: fadeUp 0.65s cubic-bezier(.16,1,.3,1) both 0.46s; }
+    .slide.anim .pillar:nth-child(3) { animation: fadeUp 0.65s cubic-bezier(.16,1,.3,1) both 0.60s; }
+    .slide.anim .pillar:nth-child(4) { animation: fadeUp 0.65s cubic-bezier(.16,1,.3,1) both 0.74s; }
+
+    /* Coin card */
+    .slide.anim .coin-card { animation: fadeUp 0.7s cubic-bezier(.16,1,.3,1) both 0.48s; }
+
+    /* Team members — staggered */
+    .slide.anim .team-member:nth-child(1) { animation: fadeUp 0.6s cubic-bezier(.16,1,.3,1) both 0.38s; }
+    .slide.anim .team-member:nth-child(2) { animation: fadeUp 0.6s cubic-bezier(.16,1,.3,1) both 0.50s; }
+    .slide.anim .team-member:nth-child(3) { animation: fadeUp 0.6s cubic-bezier(.16,1,.3,1) both 0.62s; }
+    .slide.anim .team-member:nth-child(4) { animation: fadeUp 0.6s cubic-bezier(.16,1,.3,1) both 0.74s; }
+
   </style>
 </head>
 <body>
@@ -317,7 +414,7 @@
   <!-- ══════════════════════════════════════════════════ -->
   <!-- SLIDE 1 · TITLE                                    -->
   <!-- ══════════════════════════════════════════════════ -->
-  <section class="slide active" id="slide-1">
+  <section class="slide active anim" id="slide-1">
     <div class="orb orb--gold"     style="top:-220px; right:-80px;"></div>
     <div class="orb orb--teal"     style="bottom:-200px; left:-100px;"></div>
 
@@ -568,7 +665,7 @@
           </ul>
         </div>
         <div class="coin-card">
-          <div style="font-size:72px; margin-bottom:16px;">🪙</div>
+          <div class="coin-emoji" style="font-size:72px; margin-bottom:16px;">🪙</div>
           <div style="font-family:var(--serif); font-size:52px; color:var(--gold); font-weight:600; line-height:1;">250</div>
           <div style="font-family:var(--sans); font-size:13px; color:var(--cream-40); margin:8px 0 24px; letter-spacing:.06em;">coins earned today</div>
           <div class="chip-row" style="justify-content:center;">
@@ -651,10 +748,12 @@
     const to   = document.getElementById('slide-' + n);
 
     from.classList.add('exiting');
-    from.classList.remove('active');
+    from.classList.remove('active', 'anim');
     setTimeout(() => from.classList.remove('exiting'), 600);
 
     to.classList.add('active');
+    to.classList.remove('anim');
+    requestAnimationFrame(() => requestAnimationFrame(() => to.classList.add('anim')));
     cur = n;
 
     document.getElementById('progress-fill').style.width =
