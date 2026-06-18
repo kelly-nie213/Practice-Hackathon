@@ -17,6 +17,13 @@ export type MainTabParamList = {
   Settings: undefined;
 };
 
+export type GamesStackParamList = {
+  GamesHub: undefined;
+  MiniSudoku: undefined;
+  ClassicSudoku: undefined;
+  NumberMatch: undefined;
+};
+
 export type MemoriesStackParamList = {
   MemoriesHub: undefined;
   MusicPlayer: undefined;

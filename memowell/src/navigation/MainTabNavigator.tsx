@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import type { MainTabParamList } from '../types/navigation';
 import DailyOrientationScreen from '../screens/home/DailyOrientationScreen';
-import GamesHubScreen from '../screens/games/GamesHubScreen';
+import GamesNavigator from './GamesNavigator';
 import MemoriesNavigator from './MemoriesNavigator';
 import SettingsNavigator from './SettingsNavigator';
 import { COLORS } from '../constants/colors';
@@ -43,7 +43,7 @@ export default function MainTabNavigator() {
     >
       <Tab.Screen name="Home" component={DailyOrientationScreen} options={{ tabBarLabel: 'Home' }} />
       <Tab.Screen name="Memories" component={MemoriesNavigator} options={{ tabBarLabel: 'Memories' }} />
-      <Tab.Screen name="Games" component={GamesHubScreen} options={{ tabBarLabel: 'Games' }} />
+      <Tab.Screen name="Games" component={GamesNavigator} options={{ tabBarLabel: 'Games' }} />
       <Tab.Screen name="Settings" component={SettingsNavigator} options={{ tabBarLabel: 'Settings' }} />
     </Tab.Navigator>
   );
