@@ -1,19 +1,25 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import AnimatedCard from '../../components/common/AnimatedCard';
 import SpeakableCard from '../../components/common/SpeakableCard';
 import LargeText from '../../components/common/LargeText';
 import { COLORS } from '../../constants/colors';
 import { SPACING, RADIUS } from '../../constants/spacing';
+import type { GamesStackParamList } from '../../types/navigation';
+
+type Nav = StackNavigationProp<GamesStackParamList, 'GamesHub'>;
 
 const GAMES = [
-  { emoji: '🃏', title: 'Memory Match', desc: 'Find matching pairs of cards', color: COLORS.DUSTY_ROSE },
-  { emoji: '📝', title: 'Word Search', desc: 'Find hidden words in the grid', color: COLORS.SAGE_GREEN },
-  { emoji: '🔢', title: 'Number Puzzles', desc: 'Gentle number matching games', color: COLORS.SOFT_PEACH },
+  { emoji: '🃏', title: 'Memory Match', desc: 'Find matching pairs of cards', color: COLORS.DUSTY_ROSE, comingSoon: true },
+  { emoji: '📝', title: 'Word Search', desc: 'Find hidden words in the grid', color: COLORS.SAGE_GREEN, comingSoon: false },
+  { emoji: '🔢', title: 'Number Puzzles', desc: 'Gentle number matching games', color: COLORS.SOFT_PEACH, comingSoon: true },
 ];
 
 export default function GamesHubScreen() {
+  const navigation = useNavigation<Nav>();
   const comingSoon = () =>
     Alert.alert('Coming Soon! 🎉', 'New games are on their way. Keep doing your daily routine to earn rewards!');
 
@@ -29,7 +35,7 @@ export default function GamesHubScreen() {
           <AnimatedCard key={game.title} delay={i * 120} style={styles.cardWrapper}>
             <SpeakableCard
               speakText={game.title + '. ' + game.desc}
-              onDoubleTap={comingSoon}
+              onDoubleTap={game.comingSoon ? comingSoon : () => navigation.navigate('WordSearch')}
               backgroundColor={game.color}
               style={styles.gameCard}
             >
@@ -41,9 +47,11 @@ export default function GamesHubScreen() {
                     {game.desc}
                   </LargeText>
                 </View>
-                <View style={styles.badge}>
-                  <LargeText size="CAPTION" bold color={COLORS.CHARCOAL}>Soon</LargeText>
-                </View>
+                {game.comingSoon && (
+                  <View style={styles.badge}>
+                    <LargeText size="CAPTION" bold color={COLORS.CHARCOAL}>Soon</LargeText>
+                  </View>
+                )}
               </View>
             </SpeakableCard>
           </AnimatedCard>

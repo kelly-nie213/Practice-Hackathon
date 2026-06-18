@@ -13,3 +13,17 @@ export const COLORS = {
   SUCCESS_GREEN: '#5A9E6F',
   OVERLAY: 'rgba(0,0,0,0.45)',
 } as const;
+
+// Distinct, color-blind-friendly palette used to color-code word search words.
+export const WORD_SEARCH_COLORS: string[] = [
+  '#8DAA91', // sage green
+  '#C4998B', // dusty rose
+  '#D9933F', // amber
+  '#5B8DBA', // blue
+  '#9B6B9E', // purple
+  '#4FA3A0', // teal
+  '#C45B5B', // brick red
+  '#B8A9C9', // lavender
+  '#6B8A6F', // sage dark
+  '#C9A06B', // tan/gold
+];

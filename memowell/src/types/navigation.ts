@@ -30,3 +30,8 @@ export type SettingsStackParamList = {
   ProfileEdit: undefined;
   FamilyEdit: undefined;
 };
+
+export type GamesStackParamList = {
+  GamesHub: undefined;
+  WordSearch: undefined;
+};
