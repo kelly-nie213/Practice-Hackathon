@@ -1,21 +1,33 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import AnimatedCard from '../../components/common/AnimatedCard';
 import SpeakableCard from '../../components/common/SpeakableCard';
 import LargeText from '../../components/common/LargeText';
 import { COLORS } from '../../constants/colors';
 import { SPACING, RADIUS } from '../../constants/spacing';
+import type { GamesStackParamList } from '../../types/navigation';
+
+type NavProp = StackNavigationProp<GamesStackParamList, 'GamesHub'>;
 
 const GAMES = [
-  { emoji: '🃏', title: 'Memory Match', desc: 'Find matching pairs of cards', color: COLORS.DUSTY_ROSE },
-  { emoji: '📝', title: 'Word Search', desc: 'Find hidden words in the grid', color: COLORS.SAGE_GREEN },
-  { emoji: '🔢', title: 'Number Puzzles', desc: 'Gentle number matching games', color: COLORS.SOFT_PEACH },
+  { emoji: '🃏', title: 'Memory Match', desc: 'Find matching pairs of cards', color: COLORS.DUSTY_ROSE, ready: true },
+  { emoji: '📝', title: 'Word Search', desc: 'Find hidden words in the grid', color: COLORS.SAGE_GREEN, ready: false },
+  { emoji: '🔢', title: 'Number Puzzles', desc: 'Gentle number matching games', color: COLORS.SOFT_PEACH, ready: false },
 ];
 
 export default function GamesHubScreen() {
-  const comingSoon = () =>
-    Alert.alert('Coming Soon! 🎉', 'New games are on their way. Keep doing your daily routine to earn rewards!');
+  const navigation = useNavigation<NavProp>();
+
+  const handleGamePress = (title: string, ready: boolean) => {
+    if (title === 'Memory Match') {
+      navigation.navigate('MemoryMatch');
+    } else {
+      Alert.alert('Coming Soon! 🎉', 'New games are on their way. Keep doing your daily routine to earn rewards!');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -29,7 +41,7 @@ export default function GamesHubScreen() {
           <AnimatedCard key={game.title} delay={i * 120} style={styles.cardWrapper}>
             <SpeakableCard
               speakText={game.title + '. ' + game.desc}
-              onDoubleTap={comingSoon}
+              onDoubleTap={() => handleGamePress(game.title, game.ready)}
               backgroundColor={game.color}
               style={styles.gameCard}
             >
@@ -42,7 +54,9 @@ export default function GamesHubScreen() {
                   </LargeText>
                 </View>
                 <View style={styles.badge}>
-                  <LargeText size="CAPTION" bold color={COLORS.CHARCOAL}>Soon</LargeText>
+                  <LargeText size="CAPTION" bold color={COLORS.CHARCOAL}>
+                    {game.ready ? 'Play' : 'Soon'}
+                  </LargeText>
                 </View>
               </View>
             </SpeakableCard>
@@ -53,7 +67,7 @@ export default function GamesHubScreen() {
           <LargeText size="H2" center>🏅</LargeText>
           <LargeText size="H3" bold center style={{ marginTop: SPACING.SM }}>Keep it up!</LargeText>
           <LargeText size="BODY" center color={COLORS.MEDIUM_GRAY} style={{ marginTop: SPACING.XS }}>
-            Complete your daily routine to earn achievement medals. Games coming soon!
+            Complete your daily routine to earn achievement medals. More games coming soon!
           </LargeText>
         </AnimatedCard>
       </ScrollView>
