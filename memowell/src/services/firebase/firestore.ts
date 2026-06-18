@@ -64,6 +64,15 @@ export async function seedChecklistItems(uid: string, items: Omit<ChecklistItem,
   await Promise.all(batch);
 }
 
+export async function addChecklistItem(uid: string, item: Omit<ChecklistItem, 'id'>): Promise<string> {
+  const ref = await addDoc(collection(db, 'users', uid, 'checklistItems'), item);
+  return ref.id;
+}
+
+export async function deleteChecklistItem(uid: string, itemId: string): Promise<void> {
+  await deleteDoc(doc(db, 'users', uid, 'checklistItems', itemId));
+}
+
 // --- Checklist Log ---
 export async function getChecklistLog(uid: string, date: string): Promise<ChecklistLog | null> {
   const snap = await getDoc(doc(db, 'users', uid, 'checklistLog', date));

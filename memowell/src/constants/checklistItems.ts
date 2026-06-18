@@ -8,6 +8,14 @@ export const DEFAULT_MORNING_ITEMS: Omit<ChecklistItem, 'id'>[] = [
   { label: 'Drink a glass of water', type: 'morning', defaultEnabled: true, iconName: 'cafe' },
 ];
 
+export const DEFAULT_AFTERNOON_ITEMS: Omit<ChecklistItem, 'id'>[] = [
+  { label: 'Eat lunch', type: 'afternoon', defaultEnabled: true, iconName: 'restaurant' },
+  { label: 'Take afternoon medication', type: 'afternoon', defaultEnabled: false, iconName: 'medical' },
+  { label: 'Go for a walk', type: 'afternoon', defaultEnabled: true, iconName: 'walk' },
+  { label: 'Rest or nap', type: 'afternoon', defaultEnabled: true, iconName: 'bed' },
+  { label: 'Drink water', type: 'afternoon', defaultEnabled: true, iconName: 'water' },
+];
+
 export const DEFAULT_EVENING_ITEMS: Omit<ChecklistItem, 'id'>[] = [
   { label: 'Take evening medication', type: 'evening', defaultEnabled: true, iconName: 'medical' },
   { label: 'Eat dinner', type: 'evening', defaultEnabled: true, iconName: 'restaurant' },

@@ -1,4 +1,4 @@
-export type ChecklistType = 'morning' | 'evening';
+export type ChecklistType = 'morning' | 'afternoon' | 'evening';
 
 export interface ChecklistItem {
   id: string;

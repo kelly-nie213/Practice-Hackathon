@@ -6,15 +6,10 @@ import DateWeatherCard from '../../components/home/DateWeatherCard';
 import FamilySpotlightCard from '../../components/home/FamilySpotlightCard';
 import WhoAmICard from '../../components/home/WhoAmICard';
 import AffirmationCard from '../../components/home/AffirmationCard';
-import ChecklistCard from '../../components/home/ChecklistCard';
+import RoutineBoard from '../../components/home/RoutineBoard';
 import SOSButton from '../../components/home/SOSButton';
 import { COLORS } from '../../constants/colors';
 import { SPACING } from '../../constants/spacing';
-
-function isEvening(): boolean {
-  const h = new Date().getHours();
-  return h >= 18;
-}
 
 export default function DailyOrientationScreen() {
   return (
@@ -41,7 +36,7 @@ export default function DailyOrientationScreen() {
         </AnimatedCard>
 
         <AnimatedCard delay={480} style={styles.card}>
-          <ChecklistCard type={isEvening() ? 'evening' : 'morning'} />
+          <RoutineBoard />
         </AnimatedCard>
 
         {/* Extra bottom padding so SOS doesn't overlap last card */}
