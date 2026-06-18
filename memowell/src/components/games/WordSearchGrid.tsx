@@ -1,4 +1,4 @@
-import React, { useReducer, useRef, useState } from 'react';
+import React, { useReducer, useRef } from 'react';
 import { View, StyleSheet, PanResponder, LayoutChangeEvent, GestureResponderEvent } from 'react-native';
 import LargeText from '../common/LargeText';
 import { useTheme } from '../../context/ThemeContext';
@@ -9,6 +9,7 @@ interface Props {
   puzzle: WordSearchPuzzle;
   foundWords: string[];
   onWordFound: (word: string) => void;
+  size: number;
 }
 
 function cellKey(c: GridCell): string {
@@ -19,7 +20,7 @@ function cellsEqual(a: GridCell[], b: GridCell[]): boolean {
   return a.length === b.length && a.every((c, i) => c.row === b[i].row && c.col === b[i].col);
 }
 
-// Snaps a drag/tap gesture to one of the 8 straight word-search directions.
+// Snaps a drag gesture to one of the 8 straight word-search directions.
 function computeLine(start: GridCell, end: GridCell): GridCell[] | null {
   const dr = end.row - start.row;
   const dc = end.col - start.col;
@@ -37,9 +38,8 @@ function computeLine(start: GridCell, end: GridCell): GridCell[] | null {
   return cells;
 }
 
-export default function WordSearchGrid({ puzzle, foundWords, onWordFound }: Props) {
+export default function WordSearchGrid({ puzzle, foundWords, onWordFound, size }: Props) {
   const { colors, scaled } = useTheme();
-  const [containerSize, setContainerSize] = useState(0);
   const [, bump] = useReducer((c) => c + 1, 0);
   const containerRef = useRef<View>(null);
   // pageX/Y of the grid container's top-left corner, used to convert touch
@@ -48,17 +48,15 @@ export default function WordSearchGrid({ puzzle, foundWords, onWordFound }: Prop
   // not the container, so it can't be used directly here).
   const containerOrigin = useRef({ x: 0, y: 0 });
 
-  // Gesture-local state lives in a ref so PanResponder handlers (created once)
-  // always read the latest values without going stale.
-  const sel = useRef<{
-    gestureStart: GridCell | null;
-    pendingStart: GridCell | null;
-    activePath: GridCell[];
-    touchOrigin: { x: number; y: number };
-    moved: boolean;
-  }>({ gestureStart: null, pendingStart: null, activePath: [], touchOrigin: { x: 0, y: 0 }, moved: false });
+  // Gesture-local state lives in a ref so it can be mutated without
+  // triggering renders on every pixel of movement; `bump()` forces the
+  // render only when the highlighted path actually changes.
+  const sel = useRef<{ gestureStart: GridCell | null; activePath: GridCell[] }>({
+    gestureStart: null,
+    activePath: [],
+  });
 
-  const cellSize = containerSize > 0 ? containerSize / puzzle.gridSize : 0;
+  const cellSize = size / puzzle.gridSize;
 
   const foundCellColor = new Map<string, string>();
   puzzle.placements.forEach((p) => {
@@ -89,30 +87,25 @@ export default function WordSearchGrid({ puzzle, foundWords, onWordFound }: Prop
 
   // Recreated every render (cheap) so its closures always see the latest
   // cellSize/puzzle/foundWords — caching this in a one-time useRef froze
-  // those values at their first-render state (cellSize stuck at 0) and broke
-  // selection entirely.
+  // those values at their first-render state and broke selection entirely.
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
+    // The stack navigator's swipe-back gesture recognizer continuously
+    // contests the responder while any touch moves across the screen. Without
+    // refusing here, it intermittently wins mid-drag and silently kills the
+    // selection, which is why dragging used to feel unreliable.
+    onPanResponderTerminationRequest: () => false,
     onPanResponderGrant: (evt: GestureResponderEvent) => {
-      if (cellSize === 0) return;
       const { x, y } = relativeFromEvent(evt);
       const cell = cellFromTouch(x, y);
       sel.current.gestureStart = cell;
-      sel.current.touchOrigin = { x, y };
-      sel.current.moved = false;
-      const base = sel.current.pendingStart ?? cell;
-      sel.current.activePath = computeLine(base, cell) ?? [cell];
+      sel.current.activePath = [cell];
       bump();
     },
     onPanResponderMove: (evt: GestureResponderEvent) => {
-      if (cellSize === 0) return;
-      const { x, y } = relativeFromEvent(evt);
-      const dx = x - sel.current.touchOrigin.x;
-      const dy = y - sel.current.touchOrigin.y;
-      if (Math.hypot(dx, dy) > cellSize * 0.5) sel.current.moved = true;
-
-      const base = sel.current.pendingStart ?? sel.current.gestureStart;
+      const base = sel.current.gestureStart;
       if (!base) return;
+      const { x, y } = relativeFromEvent(evt);
       const cell = cellFromTouch(x, y);
       const line = computeLine(base, cell);
       if (line) {
@@ -121,31 +114,14 @@ export default function WordSearchGrid({ puzzle, foundWords, onWordFound }: Prop
       }
     },
     onPanResponderRelease: (evt: GestureResponderEvent) => {
-      const { x, y } = relativeFromEvent(evt);
-      const cell = cellFromTouch(x, y);
-      const base = sel.current.pendingStart ?? sel.current.gestureStart;
-      const wasTap = !sel.current.moved;
-
-      // First tap with no pending anchor: hold this cell and wait for a second tap.
-      // This makes the game playable for users who can't reliably drag.
-      if (wasTap && !sel.current.pendingStart) {
-        sel.current.pendingStart = cell;
-        sel.current.activePath = [cell];
-        bump();
-        return;
-      }
-      // Tapping the anchor cell again cancels the selection.
-      if (wasTap && sel.current.pendingStart && cellKey(cell) === cellKey(sel.current.pendingStart)) {
-        sel.current.pendingStart = null;
-        sel.current.activePath = [];
-        bump();
-        return;
-      }
+      const base = sel.current.gestureStart;
       if (base) {
+        const { x, y } = relativeFromEvent(evt);
+        const cell = cellFromTouch(x, y);
         const line = computeLine(base, cell);
         if (line && line.length > 1) evaluate(line);
       }
-      sel.current.pendingStart = null;
+      sel.current.gestureStart = null;
       sel.current.activePath = [];
       bump();
     },
@@ -156,9 +132,8 @@ export default function WordSearchGrid({ puzzle, foundWords, onWordFound }: Prop
   return (
     <View
       ref={containerRef}
-      style={styles.container}
-      onLayout={(e: LayoutChangeEvent) => {
-        setContainerSize(e.nativeEvent.layout.width);
+      style={{ width: size, height: size }}
+      onLayout={(_e: LayoutChangeEvent) => {
         containerRef.current?.measure((_x, _y, _width, _height, pageX, pageY) => {
           containerOrigin.current = { x: pageX, y: pageY };
         });
@@ -199,7 +174,6 @@ export default function WordSearchGrid({ puzzle, foundWords, onWordFound }: Prop
 }
 
 const styles = StyleSheet.create({
-  container: { width: '100%', aspectRatio: 1 },
   row: { flexDirection: 'row' },
   cell: { justifyContent: 'center', alignItems: 'center', borderRadius: 6 },
 });

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet, LayoutChangeEvent } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -25,11 +25,14 @@ const DIFFICULTY_INFO: { key: Difficulty; emoji: string; desc: string; color: st
   { key: 'hard', emoji: '🌳', desc: '12x12 grid · 9 words', color: COLORS.DUSTY_ROSE },
 ];
 
+const GRID_CARD_PADDING = SPACING.SM;
+
 export default function WordSearchScreen() {
   const navigation = useNavigation<Nav>();
   const { speak } = useTTS();
   const [puzzle, setPuzzle] = useState<WordSearchPuzzle | null>(null);
   const [foundWords, setFoundWords] = useState<string[]>([]);
+  const [gridAreaSize, setGridAreaSize] = useState({ width: 0, height: 0 });
 
   const startGame = (difficulty: Difficulty) => {
     const p = createWordSearchPuzzle(difficulty);
@@ -61,7 +64,7 @@ export default function WordSearchScreen() {
           <LargeText size="H1" bold>Word Search</LargeText>
         </View>
         <LargeText size="BODY" color={COLORS.MEDIUM_GRAY} style={styles.sub}>
-          Choose a difficulty to begin. Drag across letters, or tap the first letter then the last letter, to find a word.
+          Choose a difficulty to begin. Click and drag across letters to find a word.
         </LargeText>
 
         <ScrollView contentContainerStyle={styles.content}>
@@ -91,38 +94,57 @@ export default function WordSearchScreen() {
     );
   }
 
+  // onLayout reports gridArea's own frame size, which still includes its
+  // paddingHorizontal/paddingVertical (padding shrinks the space available
+  // to children, not the reported frame) — subtract it here, otherwise the
+  // square grid card is sized too large and bleeds past its intended margins.
+  const availableWidth = Math.max(0, gridAreaSize.width - SPACING.LG * 2);
+  const availableHeight = Math.max(0, gridAreaSize.height - SPACING.SM * 2);
+  const outerSize = Math.max(0, Math.min(availableWidth, availableHeight));
+  const innerSize = Math.max(0, outerSize - GRID_CARD_PADDING * 2);
+
+  const onGridAreaLayout = (e: LayoutChangeEvent) => {
+    const { width, height } = e.nativeEvent.layout;
+    setGridAreaSize({ width, height });
+  };
+
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
       <View style={styles.headerRow}>
         <IconButton name="chevron-back" onPress={() => setPuzzle(null)} />
-        <LargeText size="H2" bold>{DIFFICULTY_LABEL[puzzle.difficulty]} Word Search</LargeText>
+        <LargeText size="H2" bold style={{ flex: 1 }}>{DIFFICULTY_LABEL[puzzle.difficulty]} Word Search</LargeText>
+        <LargeText size="BODY" color={COLORS.MEDIUM_GRAY}>
+          {foundWords.length}/{puzzle.placements.length}
+        </LargeText>
       </View>
 
-      <ScrollView contentContainerStyle={styles.gameContent}>
+      <View style={styles.wordListWrap}>
         <WordSearchWordList puzzle={puzzle} foundWords={foundWords} />
+      </View>
 
-        <View style={styles.gridWrap}>
-          <WordSearchGrid puzzle={puzzle} foundWords={foundWords} onWordFound={handleWordFound} />
-        </View>
-
-        <LargeText size="BODY" center color={COLORS.MEDIUM_GRAY} style={styles.progress}>
-          {foundWords.length} of {puzzle.placements.length} words found
-        </LargeText>
+      <View style={styles.gridArea} onLayout={onGridAreaLayout}>
+        {outerSize > 0 && (
+          <View style={[styles.gridCard, { width: outerSize, height: outerSize }]}>
+            <WordSearchGrid puzzle={puzzle} foundWords={foundWords} onWordFound={handleWordFound} size={innerSize} />
+          </View>
+        )}
 
         {complete && (
-          <AnimatedCard style={styles.winCard}>
-            <LargeText size="H2" center>🎉</LargeText>
-            <LargeText size="H3" bold center style={{ marginTop: SPACING.SM }}>Puzzle Complete!</LargeText>
-            <PrimaryButton label="Play Again" onPress={() => startGame(puzzle.difficulty)} style={styles.diffButton} />
-            <PrimaryButton
-              label="Change Difficulty"
-              variant="secondary"
-              onPress={() => setPuzzle(null)}
-              style={styles.diffButton}
-            />
-          </AnimatedCard>
+          <View style={styles.winOverlay}>
+            <AnimatedCard style={styles.winCard}>
+              <LargeText size="H2" center>🎉</LargeText>
+              <LargeText size="H3" bold center style={{ marginTop: SPACING.SM }}>Puzzle Complete!</LargeText>
+              <PrimaryButton label="Play Again" onPress={() => startGame(puzzle.difficulty)} style={styles.diffButton} />
+              <PrimaryButton
+                label="Change Difficulty"
+                variant="secondary"
+                onPress={() => setPuzzle(null)}
+                style={styles.diffButton}
+              />
+            </AnimatedCard>
+          </View>
         )}
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -135,14 +157,32 @@ const styles = StyleSheet.create({
   diffCard: { flexDirection: 'row', alignItems: 'center', padding: SPACING.LG, borderRadius: RADIUS.MD },
   diffText: { flex: 1, marginLeft: SPACING.MD },
   diffButton: { marginTop: SPACING.SM },
-  gameContent: { padding: SPACING.LG, gap: SPACING.MD, paddingBottom: SPACING.XXL },
-  gridWrap: { backgroundColor: COLORS.WARM_WHITE, borderRadius: RADIUS.MD, padding: SPACING.SM },
-  progress: { marginTop: SPACING.XS },
+  wordListWrap: { paddingHorizontal: SPACING.LG, paddingTop: SPACING.SM },
+  gridArea: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: SPACING.LG,
+    paddingVertical: SPACING.SM,
+  },
+  gridCard: {
+    backgroundColor: COLORS.WARM_WHITE,
+    borderRadius: RADIUS.MD,
+    padding: GRID_CARD_PADDING,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  winOverlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: COLORS.OVERLAY,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   winCard: {
     backgroundColor: COLORS.WARM_WHITE,
     borderRadius: RADIUS.LG,
     padding: SPACING.XL,
     alignItems: 'center',
-    marginTop: SPACING.MD,
+    width: '85%',
   },
 });
