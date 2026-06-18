@@ -37,4 +37,5 @@ export type GamesStackParamList = {
   ClassicSudoku: undefined;
   NumberMatch: undefined;
   WordSearch: undefined;
+  MemoryMatch: undefined;
 };

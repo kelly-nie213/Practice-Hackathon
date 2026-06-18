@@ -14,6 +14,14 @@ type Nav = StackNavigationProp<GamesStackParamList, 'GamesHub'>;
 
 const GAMES = [
   {
+    emoji: '🃏',
+    title: 'Memory Match',
+    desc: 'Find matching pairs of cards',
+    color: COLORS.DUSTY_ROSE,
+    screen: 'MemoryMatch' as const,
+    speak: 'Memory Match. Find matching pairs of cards. Double-tap to play.',
+  },
+  {
     emoji: '🔢',
     title: 'Mini Sudoku',
     desc: 'Fill a 4 by 4 grid with numbers 1 to 4',
@@ -30,7 +38,7 @@ const GAMES = [
     speak: 'Classic Sudoku. The classic 9 by 9 number puzzle. Double-tap to play.',
   },
   {
-    emoji: '🃏',
+    emoji: '🎯',
     title: 'Number Match',
     desc: 'Flip tiles to find matching number pairs',
     color: COLORS.DUSTY_ROSE,
@@ -82,7 +90,7 @@ export default function GamesHubScreen() {
           </AnimatedCard>
         ))}
 
-        <AnimatedCard delay={400} style={styles.motivationCard}>
+        <AnimatedCard delay={600} style={styles.motivationCard}>
           <LargeText size="H2" center>🧠</LargeText>
           <LargeText size="H3" bold center style={{ marginTop: SPACING.SM }}>Keep it up!</LargeText>
           <LargeText size="BODY" center color={COLORS.MEDIUM_GRAY} style={{ marginTop: SPACING.XS }}>
