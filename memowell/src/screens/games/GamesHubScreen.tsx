@@ -1,21 +1,46 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { GamesStackParamList } from '../../types/navigation';
 import AnimatedCard from '../../components/common/AnimatedCard';
 import SpeakableCard from '../../components/common/SpeakableCard';
 import LargeText from '../../components/common/LargeText';
 import { COLORS } from '../../constants/colors';
 import { SPACING, RADIUS } from '../../constants/spacing';
 
+type Nav = StackNavigationProp<GamesStackParamList, 'GamesHub'>;
+
 const GAMES = [
-  { emoji: '🃏', title: 'Memory Match', desc: 'Find matching pairs of cards', color: COLORS.DUSTY_ROSE },
-  { emoji: '📝', title: 'Word Search', desc: 'Find hidden words in the grid', color: COLORS.SAGE_GREEN },
-  { emoji: '🔢', title: 'Number Puzzles', desc: 'Gentle number matching games', color: COLORS.SOFT_PEACH },
+  {
+    emoji: '🔢',
+    title: 'Mini Sudoku',
+    desc: 'Fill a 4 by 4 grid with numbers 1 to 4',
+    color: COLORS.SOFT_PEACH,
+    screen: 'MiniSudoku' as const,
+    speak: 'Mini Sudoku. Fill a 4 by 4 grid with numbers 1 to 4. Double-tap to play.',
+  },
+  {
+    emoji: '🧩',
+    title: 'Classic Sudoku',
+    desc: 'The classic 9 by 9 number puzzle',
+    color: COLORS.SAGE_GREEN,
+    screen: 'ClassicSudoku' as const,
+    speak: 'Classic Sudoku. The classic 9 by 9 number puzzle. Double-tap to play.',
+  },
+  {
+    emoji: '🃏',
+    title: 'Number Match',
+    desc: 'Flip tiles to find matching number pairs',
+    color: COLORS.DUSTY_ROSE,
+    screen: 'NumberMatch' as const,
+    speak: 'Number Match. Flip tiles to find matching number pairs. Double-tap to play.',
+  },
 ];
 
 export default function GamesHubScreen() {
-  const comingSoon = () =>
-    Alert.alert('Coming Soon! 🎉', 'New games are on their way. Keep doing your daily routine to earn rewards!');
+  const navigation = useNavigation<Nav>();
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -28,8 +53,8 @@ export default function GamesHubScreen() {
         {GAMES.map((game, i) => (
           <AnimatedCard key={game.title} delay={i * 120} style={styles.cardWrapper}>
             <SpeakableCard
-              speakText={game.title + '. ' + game.desc}
-              onDoubleTap={comingSoon}
+              speakText={game.speak}
+              onDoubleTap={() => navigation.navigate(game.screen)}
               backgroundColor={game.color}
               style={styles.gameCard}
             >
@@ -41,19 +66,19 @@ export default function GamesHubScreen() {
                     {game.desc}
                   </LargeText>
                 </View>
-                <View style={styles.badge}>
-                  <LargeText size="CAPTION" bold color={COLORS.CHARCOAL}>Soon</LargeText>
-                </View>
               </View>
+              <LargeText size="CAPTION" color={COLORS.WARM_WHITE} style={styles.hint}>
+                Tap to hear · Double-tap to play
+              </LargeText>
             </SpeakableCard>
           </AnimatedCard>
         ))}
 
         <AnimatedCard delay={400} style={styles.motivationCard}>
-          <LargeText size="H2" center>🏅</LargeText>
+          <LargeText size="H2" center>🧠</LargeText>
           <LargeText size="H3" bold center style={{ marginTop: SPACING.SM }}>Keep it up!</LargeText>
           <LargeText size="BODY" center color={COLORS.MEDIUM_GRAY} style={{ marginTop: SPACING.XS }}>
-            Complete your daily routine to earn achievement medals. Games coming soon!
+            Playing a little every day is great for your mind.
           </LargeText>
         </AnimatedCard>
       </ScrollView>
@@ -69,12 +94,7 @@ const styles = StyleSheet.create({
   cardWrapper: {},
   gameCard: { padding: SPACING.LG },
   row: { flexDirection: 'row', alignItems: 'center', gap: SPACING.MD },
-  badge: {
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    borderRadius: RADIUS.FULL,
-    paddingHorizontal: SPACING.SM,
-    paddingVertical: SPACING.XS,
-  },
+  hint: { marginTop: SPACING.SM, opacity: 0.75 },
   motivationCard: {
     backgroundColor: COLORS.WARM_WHITE,
     borderRadius: RADIUS.LG,
