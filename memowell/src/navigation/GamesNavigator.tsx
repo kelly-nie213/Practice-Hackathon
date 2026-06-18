@@ -5,6 +5,7 @@ import GamesHubScreen from '../screens/games/GamesHubScreen';
 import MiniSudokuScreen from '../screens/games/MiniSudokuScreen';
 import ClassicSudokuScreen from '../screens/games/ClassicSudokuScreen';
 import NumberMatchScreen from '../screens/games/NumberMatchScreen';
+import WordSearchScreen from '../screens/games/WordSearchScreen';
 import { COLORS } from '../constants/colors';
 
 const Stack = createStackNavigator<GamesStackParamList>();
@@ -21,6 +22,7 @@ export default function GamesNavigator() {
       <Stack.Screen name="MiniSudoku" component={MiniSudokuScreen} />
       <Stack.Screen name="ClassicSudoku" component={ClassicSudokuScreen} />
       <Stack.Screen name="NumberMatch" component={NumberMatchScreen} />
+      <Stack.Screen name="WordSearch" component={WordSearchScreen} />
     </Stack.Navigator>
   );
 }

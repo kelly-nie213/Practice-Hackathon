@@ -3,12 +3,12 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import type { GamesStackParamList } from '../../types/navigation';
 import AnimatedCard from '../../components/common/AnimatedCard';
 import SpeakableCard from '../../components/common/SpeakableCard';
 import LargeText from '../../components/common/LargeText';
 import { COLORS } from '../../constants/colors';
 import { SPACING, RADIUS } from '../../constants/spacing';
+import type { GamesStackParamList } from '../../types/navigation';
 
 type Nav = StackNavigationProp<GamesStackParamList, 'GamesHub'>;
 
@@ -36,6 +36,14 @@ const GAMES = [
     color: COLORS.DUSTY_ROSE,
     screen: 'NumberMatch' as const,
     speak: 'Number Match. Flip tiles to find matching number pairs. Double-tap to play.',
+  },
+  {
+    emoji: '📝',
+    title: 'Word Search',
+    desc: 'Find hidden words in the grid',
+    color: COLORS.SAGE_GREEN,
+    screen: 'WordSearch' as const,
+    speak: 'Word Search. Find hidden words in the grid. Double-tap to play.',
   },
 ];
 
